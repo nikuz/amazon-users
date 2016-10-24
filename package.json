@@ -1,0 +1,17 @@
+{
+  "name": "amazon-users",
+  "version": "0.0.1",
+  "description": "Amazon users generator",
+  "scripts": {
+
+  },
+  "author": "Nikolay Kuznetcov",
+  "license": "ISC",
+  "dependencies": {
+    "underscore": "1.8.3",
+    "sqlite3": "3.1.6"
+  },
+  "devDependencies": {
+
+  }
+}
