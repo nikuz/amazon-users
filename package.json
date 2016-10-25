@@ -2,16 +2,25 @@
   "name": "amazon-users",
   "version": "0.0.1",
   "description": "Amazon users generator",
-  "scripts": {
-
-  },
+  "scripts": {},
   "author": "Nikolay Kuznetcov",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.1.2",
+    "colors": "^1.1.2",
+    "grunt": "^1.0.1",
+    "grunt-webdriver": "^2.0.1",
+    "mysql": "^2.11.1",
+    "progress": "^1.1.8",
+    "selenium-standalone": "^5.7.2",
     "underscore": "1.8.3",
-    "sqlite3": "3.1.6"
+    "wdio-mocha-framework": "^0.4.3",
+    "wdio-spec-reporter": "0.0.3",
+    "webdriverio": "^4.2.16"
   },
   "devDependencies": {
-
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-jscs": "^3.0.1",
+    "mocha": "^3.1.2"
   }
 }
