@@ -95,7 +95,6 @@ describe('Registration', function() {
       it('reload session', function() {
         bar.tick(1);
         if (newUserData) {
-          browser.pause(1000 * 10);
           browser.reload();
         }
       });

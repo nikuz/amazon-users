@@ -11,6 +11,7 @@
     "grunt": "^1.0.1",
     "grunt-webdriver": "^2.0.1",
     "mysql": "^2.11.1",
+    "node-tesseract": "^0.2.7",
     "progress": "^1.1.8",
     "selenium-standalone": "^5.7.2",
     "underscore": "1.8.3",

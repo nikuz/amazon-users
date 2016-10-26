@@ -2,16 +2,82 @@
 
 var colors = require('colors'),
   emailTools = require('../tools/email'),
-  passwordTools = require('../tools/password'),
-  inputTools = require('../tools/input');
+  captchaTools = require('../tools/captcha'),
+  passwordTools = require('../tools/password');
 
-exports = module.exports = function(user) {
+function fillTheForm(user, email, password, captcha) {
+  var welcomeMessage = '.welcome-msg',
+    emailAlreadyUsedMessage = '.a-alert-warning .a-alert-heading',
+    captchaField = '#auth-captcha-guess',
+    form = '#ap_register_form';
+
+  browser
+    .setValue('#ap_customer_name', user)
+    .setValue('#ap_email', email)
+    .setValue('#ap_password', password)
+    .setValue('#ap_password_check', password);
+
+  if (captcha) {
+    browser.setValue(captchaField, captcha);
+  }
+
+  browser
+    .click(`${form} input[type="submit"]`)
+    .waitUntil(function() {
+      return browser.isVisible(welcomeMessage) === true
+        || browser.isVisible(emailAlreadyUsedMessage) === true
+        || browser.isVisible(captchaField) === true;
+    });
+
+  if (browser.isVisible(welcomeMessage)) {
+    console.log('');
+    console.log('Registration success: %s'.green, user);
+    return {
+      name: user,
+      email,
+      password
+    };
+  }
+
+  if (browser.isVisible(emailAlreadyUsedMessage)) {
+    browser
+      .back()
+      .waitForVisible(form);
+
+    return fillTheForm(user, emailTools.change(email), password);
+  }
+
+  if (browser.isVisible(captchaField)) {
+    let captchaUrl = browser.getAttribute('#auth-captcha-image', 'src'),
+      captchaResolved;
+
+    captchaTools.solve(captchaUrl).then(function(result) {
+      captchaResolved = result;
+    }).catch(function(err) {
+      console.log(err);
+      captchaResolved = true;
+    });
+
+    browser.waitUntil(function() {
+      return captchaResolved;
+    });
+
+    return fillTheForm(user, email, password, captchaResolved);
+  }
+
+  console.log('');
+  console.log('Registration fault: %s'.red, user);
+  return null;
+}
+
+// ---------
+// public methods
+// ---------
+
+function registration(user) {
   var email = emailTools.generate(user),
-    password = passwordTools.generate();
-
-  var signupLink = '.nav-signin-tooltip-footer a',
-    form = '#ap_register_form',
-    welcomeMessage = '.welcome-msg';
+    password = passwordTools.generate(),
+    signupLink = '.nav-signin-tooltip-footer a';
 
   browser
     .url('/')
@@ -19,27 +85,13 @@ exports = module.exports = function(user) {
 
   browser
     .click(signupLink)
-    .waitForVisible(form);
+    .waitForVisible('#ap_register_form');
 
-  inputTools.setValueAsHuman('#ap_customer_name', user);
-  inputTools.setValueAsHuman('#ap_email', email);
-  inputTools.setValueAsHuman('#ap_password', password);
-  inputTools.setValueAsHuman('#ap_password_check', password);
+  return fillTheForm(user, email, password);
+}
 
-  browser
-    .click(`${form} input[type="submit"]`)
-    .waitForVisible(welcomeMessage);
+// ---------
+// interface
+// ---------
 
-  console.log('');
-  if (browser.isVisible(welcomeMessage)) {
-    console.log('Registration success: %s'.green, user);
-    return {
-      name: user,
-      email,
-      password
-    };
-  } else {
-    console.log('Registration fault: %s'.red, user);
-    return null;
-  }
-};
+exports = module.exports = registration;
